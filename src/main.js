@@ -6,8 +6,9 @@ import PopupView from './view/popup.js';
 import ButtonShowMoreView from './view/btn-show.js';
 import NoCardView from './view/no-card.js';
 
+import {render, RenderPosition, replace, remove} from './utils/render.js';
+// import {generateRandomArray, getRandomInteger, getRandomArrayElement, createElement, render, RenderPosition} from './utils';
 import { generateMovieData } from './mock/movie-data-generator.js';
-import { render, RenderPosition } from './utils.js';
 
 const MOVIE_COUNT = 20;
 
@@ -27,10 +28,12 @@ const renderBoard = (filmsListContainer, cards) => {
   
     const replaceCardToPopup = () => {
       siteBodyElement.appendChild(popupComponent.getElement(), cardComponent.getElement());
+      // replace(popupComponent, cardComponent);
     };
   
     const replacePopupToCard = () => {
-      siteBodyElement.removeChild(popupComponent.getElement());
+      // siteBodyElement.removeChild(popupComponent.getElement());
+      replace(cardComponent, popupComponent);
     };
   
     const onEscKeyDown = (evt) => {
@@ -41,36 +44,46 @@ const renderBoard = (filmsListContainer, cards) => {
       }
     };
   
-    cardComponent.getElement().querySelector('.film-card__poster').addEventListener('click', () => {
+    // cardComponent.getElement().querySelector('.film-card__poster').addEventListener('click', () => {
+    //   replaceCardToPopup();
+    //   siteBodyElement.classList.add('hide-overflow');
+    //   document.addEventListener('keydown', onEscKeyDown);
+    // });
+  
+    // cardComponent.getElement().querySelector('.film-card__title').addEventListener('click', () => {
+    //   replaceCardToPopup();
+    //   siteBodyElement.classList.add('hide-overflow');
+    // });
+  
+    // cardComponent.getElement().querySelector('.film-card__comments').addEventListener('click', () => {
+    //   replaceCardToPopup();
+    //   siteBodyElement.classList.add('hide-overflow');
+    // });
+
+    cardComponent.setPopupClickHandler(() => {
       replaceCardToPopup();
-      siteBodyElement.classList.add('hide-overflow');
       document.addEventListener('keydown', onEscKeyDown);
     });
   
-    cardComponent.getElement().querySelector('.film-card__title').addEventListener('click', () => {
-      replaceCardToPopup();
-      siteBodyElement.classList.add('hide-overflow');
-    });
-  
-    cardComponent.getElement().querySelector('.film-card__comments').addEventListener('click', () => {
-      replaceCardToPopup();
-      siteBodyElement.classList.add('hide-overflow');
-    });
-  
-    popupComponent.getElement().querySelector('.film-details__close-btn').addEventListener('click', () => {
+    // popupComponent.getElement().querySelector('.film-details__close-btn').addEventListener('click', () => {
+    //   replacePopupToCard();
+    //   siteBodyElement.classList.remove('hide-overflow');
+    //   document.removeEventListener('keydown', onEscKeyDown);
+    // });
+
+    popupComponent.setPopupHandler(() => {
       replacePopupToCard();
-      siteBodyElement.classList.remove('hide-overflow');
       document.removeEventListener('keydown', onEscKeyDown);
     });
   
-    render(cardListElement, cardComponent.getElement(), RenderPosition.AFTERBEGIN);
+    render(cardListElement, cardComponent, RenderPosition.BEFOREEND);
   };
   
   if (cards.length === 0) {
-    render(filmsListContainer, new NoCardView().getElement(), RenderPosition.BEFOREEND);
+    render(filmsListContainer, new NoCardView(), RenderPosition.BEFOREEND);
   } else {
     const menuElement = siteBodyElement.querySelector('.main');
-    render(menuElement, new MainMenuView().getElement(), RenderPosition.AFTERBEGIN);
+    render(menuElement, new MainMenuView(), RenderPosition.AFTERBEGIN);
     
     const cardListComponent = new CardListView();
     render(filmsListContainer, cardListComponent.getElement(), RenderPosition.BEFOREEND);
@@ -81,7 +94,7 @@ const renderBoard = (filmsListContainer, cards) => {
   }
 
   const btnShow = siteBodyElement.querySelector('.films-list');
-  render(btnShow, new ButtonShowMoreView().getElement(), RenderPosition.BEFOREEND);
+  render(btnShow, new ButtonShowMoreView(), RenderPosition.BEFOREEND);
 };
 
 renderBoard(filmsListContainer, cards);

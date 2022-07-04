@@ -1,0 +1,93 @@
+import CardListView from './view/card-list.js';
+import NoCardView from './view/no-card.js';
+import CardView from './view/card.js';
+import PopupView from './view/popup.js';
+import ButtonShowMoreView from './view/btn-show.js';
+import {render, RenderPosition, replace} from '../utils/render.js';
+
+export default class MovieList {
+  constructor(movieContainer) {
+    this._movieContainer = movieContainer;
+
+    // this._boardComponent = new BoardView();
+    // this._sortComponent = new SortView();
+    this._cardListComponent = new CardListView();
+    this._noCardComponent = new NoCardView();
+  }
+
+  init(movieCards) {
+    this._movieCards = movieCards.slice();
+
+    render(this._movieContainer, this._cardListComponent, RenderPosition.BEFOREEND);
+  }
+
+  _renderSort() {
+    // Метод для рендеринга сортировки
+  }
+
+  _renderCard(card) {
+    const cardComponent = new CardView(card);
+    const popupComponent = new PopupView(card);
+
+    const replaceCardToPopup = () => {
+      siteBodyElement.appendChild(popupComponent.getElement(), cardComponent.getElement());
+    };
+  
+    const replacePopupToCard = () => {
+      replace(cardComponent, popupComponent);
+    };
+  
+    const onEscKeyDown = (evt) => {
+      if (evt.key === 'Escape' || evt.key === 'Esc') {
+        evt.preventDefault();
+        replacePopupToCard();
+        document.removeEventListener('keydown', onEscKeyDown);
+      }
+    };
+
+    cardComponent.setPopupClickHandler(() => {
+      replaceCardToPopup();
+      document.addEventListener('keydown', onEscKeyDown);
+    });
+
+    popupComponent.setPopupHandler(() => {
+      replacePopupToCard();
+      document.removeEventListener('keydown', onEscKeyDown);
+    });
+
+    render(this._cardListComponent, cardComponent, RenderPosition.BEFOREEND);
+  }
+
+  _renderCards(from, to) {
+    // Метод для рендеринга N-задач за раз
+    this._movieCards
+      .slice(from, to)
+      .forEach((movieCard) => this._renderCard(movieCard));
+  }
+
+  _renderNoCards() {
+    render(this._cardListComponent, this._noTaskComponent, RenderPosition.AFTERBEGIN);
+  }
+
+  _renderShowMoreButton() {
+    render(this._cardListComponent, new ButtonShowMoreView(), RenderPosition.BEFOREEND);
+  }
+
+  _renderBoard() {
+    if (this._movieCards.length === 0) {
+      // render(filmsListContainer, new NoCardView(), RenderPosition.BEFOREEND);
+      this._renderNoCards;
+    } else {
+      this._renderCards;
+      // const menuElement = siteBodyElement.querySelector('.main');
+      // // render(menuElement, new MainMenuView(), RenderPosition.AFTERBEGIN);
+      
+      // const cardListComponent = new CardListView();
+      // render(filmsListContainer, cardListComponent.getElement(), RenderPosition.BEFOREEND);
+    
+      // for (let i = 0; i < MOVIE_COUNT; i++) {
+      //   renderCard(cardListComponent.getElement(), cards[i]);
+      // }
+    }
+  }
+}
